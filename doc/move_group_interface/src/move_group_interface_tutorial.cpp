@@ -68,9 +68,11 @@ int main(int argc, char** argv)
 
   // We will use the :planning_scene_interface:`PlanningSceneInterface`
   // class to add and remove collision objects in our "virtual world" scene
+  // 如何才能调整障碍物的出现？
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
   // Raw pointers are frequently used to refer to the planning group for improved performance.
+  //原始指针经常用于指代规划组以提高性能。
   const robot_state::JointModelGroup* joint_model_group =
       move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
@@ -79,29 +81,35 @@ int main(int argc, char** argv)
   //
   // The package MoveItVisualTools provides many capabilties for visualizing objects, robots,
   // and trajectories in RViz as well as debugging tools such as step-by-step introspection of a script
+  // MoveItVisualTools包提供了许多功能，可用于可视化RViz中的对象，机器人和轨迹以及调试工具，例如脚本的逐步内省
   namespace rvt = rviz_visual_tools;
   moveit_visual_tools::MoveItVisualTools visual_tools("panda_link0");
   visual_tools.deleteAllMarkers();
 
   // Remote control is an introspection tool that allows users to step through a high level script
   // via buttons and keyboard shortcuts in RViz
+  // 远程控制是一种内省工具，允许用户通过RViz中的按钮和键盘快捷键逐步执行高级脚本
   visual_tools.loadRemoteControl();
 
   // RViz provides many types of markers, in this demo we will use text, cylinders, and spheres
+  // RViz提供了许多类型的标记，在本演示中我们将使用文本，圆柱体和球体
   Eigen::Affine3d text_pose = Eigen::Affine3d::Identity();
   text_pose.translation().z() = 1.75;
   visual_tools.publishText(text_pose, "MoveGroupInterface Demo", rvt::WHITE, rvt::XLARGE);
 
   // Batch publishing is used to reduce the number of messages being sent to RViz for large visualizations
+  // 批量发布用于减少为大型可视化发送到RViz的消息数
   visual_tools.trigger();
 
   // Getting Basic Information
   // ^^^^^^^^^^^^^^^^^^^^^^^^^
   //
   // We can print the name of the reference frame for this robot.
+  // 我们可以打印这个机器人的参考框架的名称。
   ROS_INFO_NAMED("tutorial", "Reference frame: %s", move_group.getPlanningFrame().c_str());
 
   // We can also print the name of the end-effector link for this group.
+  // 我们还可以打印该组的末端效应器链接的名称。
   ROS_INFO_NAMED("tutorial", "End effector link: %s", move_group.getEndEffectorLink().c_str());
 
   // Start the demo
@@ -110,6 +118,7 @@ int main(int argc, char** argv)
 
   // Planning to a Pose goal
   // ^^^^^^^^^^^^^^^^^^^^^^^
+  // 我们可以为这个组计划一个动作，使其达到最终效应器的所需姿势。
   // We can plan a motion for this group to a desired pose for the
   // end-effector.
   geometry_msgs::Pose target_pose1;
@@ -122,6 +131,7 @@ int main(int argc, char** argv)
   // Now, we call the planner to compute the plan and visualize it.
   // Note that we are just planning, not asking move_group
   // to actually move the robot.
+  // 现在，我们打电话给计划员来计算计划并将其可视化。 请注意，我们只是计划，而不是要求move_group实际移动机器人。
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
   bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
@@ -131,6 +141,7 @@ int main(int argc, char** argv)
   // Visualizing plans
   // ^^^^^^^^^^^^^^^^^
   // We can also visualize the plan as a line with markers in RViz.
+  // 我们还可以将计划可视化为带有RViz中标记的线。
   ROS_INFO_NAMED("tutorial", "Visualizing plan 1 as trajectory line");
   visual_tools.publishAxisLabeled(target_pose1, "pose1");
   visual_tools.publishText(text_pose, "Pose Goal", rvt::WHITE, rvt::XLARGE);
@@ -148,7 +159,9 @@ int main(int argc, char** argv)
   // not use that function in this tutorial since it is
   // a blocking function and requires a controller to be active
   // and report success on execution of a trajectory.
-
+  //移动到姿势目标与上面的步骤类似，除了我们现在使用move（）函数。 
+  //请注意，我们之前设置的姿势目标仍处于活动状态，因此机器人将尝试
+  //移动到该目标。 我们不会在本教程中使用该函数，因为它是一个阻塞函数，需要一个控制器处于活动状态并报告执行轨迹的成功。
   /* Uncomment below line when working with a real robot */
   /* move_group.move(); */
 
